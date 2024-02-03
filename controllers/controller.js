@@ -12,7 +12,11 @@ exports.aboutRequest = (req, res) => {
 
 /** API endpoints */
 exports.getPosts = (req, res) => {
-    const posts = Post.find().select('_id title body').then((result) => {
+    // offset and limit in the request
+    let limit = req.query.limit || req.body.limit || 10;
+    let offset = req.query.offset || req.body.offset || 0;
+    
+    const posts = Post.find().skip(offset).limit(limit).select('_id title body').then((result) => {
         return res.json({
             status: 'success',
             message: result
@@ -36,7 +40,7 @@ exports.singlePost = (req, res) => {
 exports.createPost = (req, res) => {
     const post = new Post(req.body);
     post.save().then((result) => {
-        return res.json({
+        return res.status(201).json({
             status: 'success',
             message: result
         });

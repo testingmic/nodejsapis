@@ -28,3 +28,16 @@ exports.errorHandler = (error) => {
     };
 
 }
+
+exports.authenticationValidator = (req, res, next) => {
+    // authentication verification
+    let auth_token = req.query.token || req.body.token;
+    if(!auth_token || auth_token !== 12345) {
+        let message = !auth_token ? "Auth token was not submitted in the request." : "An invalid token was submitted for validation.";
+        return res.status(403).json({
+            status: 'Error',
+            message: `Authentication failed. ${message}`
+        });
+    }
+    next();
+}
