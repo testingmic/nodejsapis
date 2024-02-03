@@ -16,8 +16,8 @@ dotenv.config();
 
 // add rate limiting and compress the response
 const limiter = rateLimit({
-    windowMs: process.env.LIMIT * 60 * 1000,
-    max: 5
+    windowMs: process.env.TIMER * 60 * 1000,
+    max: process.env.RATING
 });
 
 const app = express();
