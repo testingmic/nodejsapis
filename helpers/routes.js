@@ -1,3 +1,5 @@
+const controller = require('../controllers/controllers');
+
 const applyAuthentication = (req, res, next) => {
     console.log(req.rawHeaders);
     console.log('My own middleware loading!!!');
@@ -5,11 +7,11 @@ const applyAuthentication = (req, res, next) => {
 }
 
 const baseRequest =  (req, res) => {
-    res.send('This is the response!');
+    return controller.rootRequest(req, res);
 };
 
-const aboutRequest = (req, res) => {
-    res.send('This is the about page request');
+const aboutRequest = (req, res, next) => {
+    return controller.aboutRequest(req, res);
 }
 
 module.exports = {
