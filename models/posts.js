@@ -2,15 +2,20 @@ const mongoose = require('mongoose');
 const postsSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: 'Title is required.',
+        minLength: 4,
+        maxLength: 64
     },
     author: {
         type: String,
-        required: true
+        required: 'Author of this post is required.',
+        minLength: 4,
+        maxLength: 32
     },
     body: {
         type: String,
-        required: true
+        required: 'The body content is required.',
+        maxLength: 2000
     }
 });
 

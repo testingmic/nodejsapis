@@ -23,7 +23,6 @@ const routes = require('./routes/routes');
 // middleware
 app.use(morgan('dev'));
 app.use(bodyParser.json());
-// app.use(expressValidator());
 
 // handle the request
 app.use("/", routes);

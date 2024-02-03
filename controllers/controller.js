@@ -12,7 +12,7 @@ exports.aboutRequest = (req, res) => {
 
 /** API endpoints */
 exports.getPosts = (req, res) => {
-    return resp.respond(res, 'Getting the list of all posts.');
+    return resp.sendResponse(res, 'Getting the list of all posts.');
 }
 
 exports.createPost = (req, res) => {
@@ -23,9 +23,6 @@ exports.createPost = (req, res) => {
             message: result
         });
     }).catch((err) => {
-        return res.status(400).json({
-            status: 'error',
-            message: err.errors
-        });
+        return res.status(400).json(resp.errorHandler(err));
     });
 }
