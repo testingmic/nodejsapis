@@ -1,8 +1,12 @@
 const express = require('express');
 const app = express();
 
-app.get('/', (req, res) => {
-    res.send('This is the response using express to the root route.');
-});
+// load the routes
+const routes = require('./helpers/routes');
 
-app.listen(3000);
+app.get('/', routes.baseRequest);
+
+const port = 3000;
+app.listen(port, () => {
+    console.log(`Node API is listening on port: ${port}`)
+});
