@@ -9,6 +9,7 @@ const routes = require('./helpers/routes');
 app.use(morgan('dev'));
 
 app.get('/', routes.baseRequest);
+app.get('/about', routes.applyAuthentication, routes.aboutRequest);
 
 const port = 3000;
 app.listen(port, () => {
