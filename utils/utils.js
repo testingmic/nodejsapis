@@ -1,6 +1,6 @@
-exports.sendResponse = (res, message) => {
+exports.sendResponse = (res, message, status = 'success') => {
     return res.send({
-        'status': 'success',
+        'status': status,
         'message': message
     });
 }
