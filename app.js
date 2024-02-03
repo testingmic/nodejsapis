@@ -1,13 +1,26 @@
 // initialize the main package
 const express = require("express");
-const app = express();
+
+// invove rate limiting
+const rateLimit = require("express-rate-limit");
+
+// add helmet and compress response
+const helmet = require("helmet");
+const compress = require("compression");
 
 // invoke other important packages
 const mongoose = require("mongoose");
 const morgan = require("morgan");
-const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 dotenv.config();
+
+// add rate limiting and compress the response
+const limiter = rateLimit({
+    windowMs: process.env.LIMIT * 60 * 1000,
+    max: 5
+});
+
+const app = express();
 
 // connect to the db
 mongoose.connect(process.env.MONGO_URI).then((data) => {
@@ -21,7 +34,18 @@ const routes = require('./routes/routes');
 
 // middleware
 app.use(morgan('dev'));
-app.use(bodyParser.json());
+
+// requests made
+app.use(helmet());
+
+// compress the response
+app.use(compress());
+
+// convert all request body to json
+app.use(express.json());
+
+// rate limit the requests
+app.use(limiter);
 
 // handle the request
 app.use("/", routes);
