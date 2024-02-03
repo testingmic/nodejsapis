@@ -1,18 +1,21 @@
+const pages = require('./pages.js');
 const resp = require('./utils');
+const Post = require('../models/posts.js');
 
-const requestAuthentication = (req, res, next) => {
-    console.log('Handling authentication');
-    next();
+exports.rootRequest = (req, res) => {
+    return pages.rootRequest(req, res);
 }
 
-const rootRequest = (req, res) => {
-    resp.respond(res, 'Request to the root of the application engine!');
+exports.aboutRequest = (req, res) => {
+    return pages.aboutRequest(req, res);
 }
 
-const aboutRequest = (req, res) => {
-    resp.respond(res, 'This is the about page request!');
+/** API endpoints */
+exports.getPosts = (req, res) => {
+    return resp.respond(res, 'Getting the list of all posts.');
 }
 
-module.exports = {
-    requestAuthentication, rootRequest, aboutRequest
+exports.createPost = (req, res) => {
+    const post = new Post(req.body);
+    console.log("Creating post: ", req.body);
 }
