@@ -1,14 +1,16 @@
+const resp = require('./utils');
+
 const requestAuthentication = (req, res, next) => {
     console.log('Handling authentication');
     next();
 }
 
 const rootRequest = (req, res) => {
-    res.send('Request to the root of the application engine!');
+    resp.respond(res, 'Request to the root of the application engine!');
 }
 
 const aboutRequest = (req, res) => {
-    res.send('This is the about page request!');
+    resp.respond(res, 'This is the about page request!');
 }
 
 module.exports = {
