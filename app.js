@@ -1,6 +1,19 @@
+// initialize the main package
 const express = require('express');
-const morgan = require('morgan');
 const app = express();
+
+// invoke other important packages
+const mongoose = require('mongoose');
+const morgan = require('morgan');
+const dotenv = require('dotenv');
+dotenv.config();
+
+// connect to the db
+mongoose.connect(process.env.MONGO_URI).then((data) => {
+    console.log("DB connection successful!");
+}).catch((err) => {
+    console.log(`DB Connection error: ${err.message}`);
+});
 
 // load the routes
 const routes = require('./routes/routes');
@@ -11,7 +24,7 @@ app.use(morgan('dev'));
 // handle the request
 app.use("/", routes);
 
-const port = 3000;
+const port = process.env.PORT;
 app.listen(port, () => {
     console.log(`Node API is listening on port: ${port}`)
 });
