@@ -1,11 +1,13 @@
 // initialize the main package
-const express = require('express');
+const express = require("express");
 const app = express();
 
 // invoke other important packages
-const mongoose = require('mongoose');
-const morgan = require('morgan');
-const dotenv = require('dotenv');
+const mongoose = require("mongoose");
+const morgan = require("morgan");
+const bodyParser = require("body-parser");
+const expressValidator = require("express-validator");
+const dotenv = require("dotenv");
 dotenv.config();
 
 // connect to the db
@@ -20,6 +22,8 @@ const routes = require('./routes/routes');
 
 // middleware
 app.use(morgan('dev'));
+app.use(bodyParser.json());
+// app.use(expressValidator());
 
 // handle the request
 app.use("/", routes);

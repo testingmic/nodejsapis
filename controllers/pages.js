@@ -1,4 +1,4 @@
-const resp = require('./utils');
+const resp = require('../utils/utils');
 
 exports.rootRequest = (req, res) => {
     resp.respond(res, 'Request to the root of the application engine!');
