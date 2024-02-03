@@ -12,7 +12,7 @@ exports.aboutRequest = (req, res) => {
 
 /** API endpoints */
 exports.getPosts = (req, res) => {
-    const posts = Post.find().then((result) => {
+    const posts = Post.find().select('_id title body').then((result) => {
         return res.json({
             status: 'success',
             message: result
@@ -23,7 +23,7 @@ exports.getPosts = (req, res) => {
 }
 
 exports.singlePost = (req, res) => {
-    const post = Post.findById(req.body).then((result) => {
+    const post = Post.findById(req.body).select('_id title body').then((result) => {
         return res.json({
             status: 'success',
             message: result
