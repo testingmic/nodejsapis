@@ -24,8 +24,16 @@ exports.singleUser = (req, res) => {
     });
 }
 
-exports.createUser = (req, res) => {
+exports.createUser = async (req, res) => {
+
+    const existingUser = await User.findOne({ email: req.body.email });
+
+    if(existingUser) {
+        return res.status(400).json({status: 'error', message: `There is an existing user with the email: ${req.body.email}`});
+    }
+
     const user = new User(req.body);
+
     user.save().then((result) => {
         return res.status(201).json({
             status: 'success',

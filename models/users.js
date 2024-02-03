@@ -29,6 +29,11 @@ const usersSchema = new mongoose.Schema({
     },
     gender: {
         type: String
+    },
+    status: {
+        type: String,
+        default: 'active',
+        enum: ['active', 'inactive', 'suspended']
     }
 });
 
