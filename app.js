@@ -3,13 +3,13 @@ const morgan = require('morgan');
 const app = express();
 
 // load the routes
-const routes = require('./helpers/routes');
+const routes = require('./routes/routes');
 
 // middleware
 app.use(morgan('dev'));
 
-app.get('/', routes.baseRequest);
-app.get('/about', routes.applyAuthentication, routes.aboutRequest);
+// handle the request
+app.use("/", routes);
 
 const port = 3000;
 app.listen(port, () => {

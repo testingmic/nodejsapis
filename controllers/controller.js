@@ -1,3 +1,8 @@
+const requestAuthentication = (req, res, next) => {
+    console.log('Handling authentication');
+    next();
+}
+
 const rootRequest = (req, res) => {
     res.send('Request to the root of the application engine!');
 }
@@ -7,5 +12,5 @@ const aboutRequest = (req, res) => {
 }
 
 module.exports = {
-    rootRequest, aboutRequest
+    requestAuthentication, rootRequest, aboutRequest
 }
