@@ -7,15 +7,16 @@ const router = express.Router();
 router.get('/', requestController.rootRequest);
 router.get('/about', requestController.aboutRequest);
 
-// get requests
+// post api requests
 router.get('/api/post', requestController.singlePost);
 router.get('/api/posts', requestController.getPosts);
-
-// post requests
 router.post('/api/post', requestController.createPost);
-
-// delete request
 router.delete('/api/post', requestController.deletePost);
+
+// user api requests
+router.get('/api/users', requestController.getUsers);
+router.get('/api/users/:id', requestController.getUser);
+router.post('/api/users', requestController.createUser);
 
 // export the routers
 module.exports = router;

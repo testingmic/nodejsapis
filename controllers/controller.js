@@ -1,6 +1,7 @@
+const posts = require('../models/posts.js');
 const pages = require('./pages.js');
-const resp = require('../utils/utils');
-const Post = require('../models/posts');
+const { createPost, deletePost, singlePost, getPosts } = require('./posts');
+const { createUser, getUsers, singleUser } = require('./users');
 
 exports.rootRequest = (req, res) => {
     return pages.rootRequest(req, res);
@@ -10,55 +11,32 @@ exports.aboutRequest = (req, res) => {
     return pages.aboutRequest(req, res);
 }
 
-/** API endpoints */
+// posts api endpoints
+exports.createPost = (req, res) => {
+    return createPost(req, res);
+}
+
 exports.getPosts = (req, res) => {
-    // offset and limit in the request
-    let limit = req.query.limit || req.body.limit || 10;
-    let offset = req.query.offset || req.body.offset || 0;
-    
-    const posts = Post.find().skip(offset).limit(limit).select('_id title body').then((result) => {
-        return res.json({
-            status: 'success',
-            message: result
-        });
-    }).catch((err) => {
-        return res.status(400).json(resp.errorHandler(err));
-    });
+    return getPosts(req, res);
 }
 
 exports.singlePost = (req, res) => {
-    const post = Post.findById(req.body).select('_id title body').then((result) => {
-        return res.json({
-            status: 'success',
-            message: result
-        });
-    }).catch((err) => {
-        return res.status(404).json(resp.errorHandler(err));
-    });
-}
-
-exports.createPost = (req, res) => {
-    const post = new Post(req.body);
-    post.save().then((result) => {
-        return res.status(201).json({
-            status: 'success',
-            message: result
-        });
-    }).catch((err) => {
-        return res.status(400).json(resp.errorHandler(err));
-    });
+    return singlePost(req, res);
 }
 
 exports.deletePost = (req, res) => {
-    const post = Post.findByIdAndDelete(req.body).then((result) => {
-        return res.json({
-            status: 'success',
-            message: 'The post record was successfully deleted.'
-        });
-    }).catch((err) => {
-        return res.status(400).json({
-            status: 'error',
-            message: 'The post id was not found.'
-        });
-    });
+    return deletePost(req, res);
+}
+
+// users api endpoints
+exports.getUsers = (req, res) => {
+    return getUsers(req, res);
+}
+
+exports.getUser = (req, res) => {
+    return singleUser(req, res);
+}
+
+exports.createUser = (req, res) => {
+    return createUser(req, res);
 }
