@@ -4,7 +4,7 @@ const Post = require('../models/posts');
 /** API endpoints */
 exports.getPosts = (req, res) => {
     // offset and limit in the request
-    let limit = req.query.limit || req.body.limit || 10;
+    let limit = req.query.limit || req.body.limit || 1000;
     let offset = req.query.offset || req.body.offset || 0;
     
     const posts = Post.find().skip(offset).limit(limit).select('_id title body').then((result) => {

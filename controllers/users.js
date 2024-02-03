@@ -2,10 +2,11 @@ const resp = require("../utils/utils");
 const User = require("../models/users");
 
 exports.getUsers = (req, res) => {
+    // offset and limit in the request
+    let limit = req.query.limit || req.body.limit || 1000;
     let offset = req.query.offset || req.body.offset || 0;
-    let limit = req.query.limit || req.body.limit || 10;
 
-    const users = User.find().skip(offset).limit(limit).then((result) => {
+    const users = User.find().select(`_id firstname lastname email phonenumber status created_at`).skip(offset).limit(limit).then((result) => {
         return res.status(200).json({
             status: 'success',
             message: result

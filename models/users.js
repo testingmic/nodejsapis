@@ -34,6 +34,10 @@ const usersSchema = new mongoose.Schema({
         type: String,
         default: 'active',
         enum: ['active', 'inactive', 'suspended']
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
     }
 });
 

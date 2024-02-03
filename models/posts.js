@@ -16,6 +16,10 @@ const postsSchema = new mongoose.Schema({
         type: String,
         required: 'The body content is required.',
         maxLength: 2000
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
     }
 });
 
