@@ -1,8 +1,7 @@
 const posts = require('../models/posts.js');
 const pages = require('./pages.js');
 const PostController = require('./posts');
-
-const { createUser, getUsers, singleUser } = require('./users');
+const UsersController = require('./users');
 
 exports.rootRequest = (req, res) => {
     return pages.rootRequest(req, res);
@@ -31,13 +30,13 @@ exports.deletePost = (req, res) => {
 
 // users api endpoints
 exports.getUsers = (req, res) => {
-    return getUsers(req, res);
+    return UsersController.getUsers(req, res);
 }
 
 exports.getUser = (req, res) => {
-    return singleUser(req, res);
+    return UsersController.singleUser(req, res);
 }
 
 exports.createUser = (req, res) => {
-    return createUser(req, res);
+    return UsersController.createUser(req, res);
 }
