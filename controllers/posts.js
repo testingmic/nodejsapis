@@ -1,13 +1,15 @@
 const resp = require('../utils/utils');
 const Post = require('../models/posts');
+const dotenv = require("dotenv");
+dotenv.config();
 
 class PostController {
 
     /** API endpoints */
     static getAllPosts(req, res) {
         // offset and limit in the request
-        let limit = req.query.limit || req.body.limit || 1000;
-        let offset = req.query.offset || req.body.offset || 0;
+        let limit = req.query.limit || req.body.limit || process.env.LIMIT;
+        let offset = req.query.offset || req.body.offset || process.env.OFFSET;
         
         const posts = Post.find().skip(offset).limit(limit).select('_id title body').then((result) => {
             return res.json({
