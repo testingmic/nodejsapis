@@ -18,7 +18,7 @@ exports.getPosts = (req, res) => {
 }
 
 exports.singlePost = (req, res) => {
-    const post = Post.findById(req.body).select('_id title body').then((result) => {
+    const post = Post.findById({_id: req.params.post_id }).select('_id title body').then((result) => {
         return res.json({
             status: 'success',
             message: result

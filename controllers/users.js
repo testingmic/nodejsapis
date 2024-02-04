@@ -17,11 +17,13 @@ exports.getUsers = (req, res) => {
 }
 
 exports.singleUser = (req, res) => {
-    const user = User.findById().then((result) => {
+    const user = User.findById({_id: req.params.user_id }).then((result) => {
         return res.status(200).json({
             status: 'success',
             message: result
         });
+    }).catch((err) => {
+        return res.status(400).json(resp.errorHandler(err));
     });
 }
 

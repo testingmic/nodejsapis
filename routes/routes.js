@@ -8,14 +8,14 @@ router.get('/', requestController.rootRequest);
 router.get('/about', requestController.aboutRequest);
 
 // post api requests
-router.get('/api/post', requestController.singlePost);
 router.get('/api/posts', requestController.getPosts);
-router.post('/api/post', requestController.createPost);
+router.get('/api/post/:post_id', requestController.singlePost);
+router.post('/api/post/', requestController.createPost);
 router.delete('/api/post', requestController.deletePost);
 
 // user api requests
 router.get('/api/users', requestController.getUsers);
-router.get('/api/users/:id', requestController.getUser);
+router.get('/api/users/:user_id', requestController.getUser);
 router.post('/api/users', requestController.createUser);
 
 // export the routers
