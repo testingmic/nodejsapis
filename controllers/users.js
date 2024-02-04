@@ -17,7 +17,7 @@ exports.getUsers = (req, res) => {
 }
 
 exports.singleUser = (req, res) => {
-    const user = User.findById({_id: req.params.user_id }).then((result) => {
+    const user = User.findById({_id: req.params.user_id }).select(`_id firstname lastname email phonenumber status created_at`).then((result) => {
         return res.status(200).json({
             status: 'success',
             message: result
