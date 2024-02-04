@@ -43,7 +43,7 @@ class PostController {
     }
 
     static deletePost(req, res) {
-        const post = Post.findByIdAndDelete(req.body).then((result) => {
+        const post = Post.findByIdAndDelete(req.params.post_id).then((result) => {
             return res.json({
                 status: 'success',
                 message: 'The post record was successfully deleted.'

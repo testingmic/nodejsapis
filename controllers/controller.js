@@ -40,3 +40,7 @@ exports.getUser = (req, res) => {
 exports.createUser = (req, res) => {
     return UsersController.createUser(req, res);
 }
+
+exports.updateUser = (req, res) => {
+    return UsersController.updateUser(req, res);
+}

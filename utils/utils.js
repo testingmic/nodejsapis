@@ -1,5 +1,6 @@
 exports.sendResponse = (res, message, status = 'success') => {
-    return res.send({
+    let istatus = status == 'success' ? 200 : (status == 'not_found' ? 404 : 400);
+    return res.status(istatus).send({
         'status': status,
         'message': message
     });
