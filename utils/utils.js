@@ -32,13 +32,13 @@ exports.errorHandler = (error) => {
 
 exports.authenticationValidator = (req, res, next) => {
     // authentication verification
-    let auth_token = parseInt(req.query.token) || parseInt(req.body.token);
-    if(!Boolean(auth_token) || auth_token !== 12345) {
-        let message = !auth_token ? "Auth token was not submitted in the request." : "An invalid token was submitted for validation.";
-        return res.status(403).json({
-            status: 'Error',
-            message: `Authentication failed. ${message}`
-        });
-    }
+    // let auth_token = parseInt(req.query.token) || parseInt(req.body.token);
+    // if(!Boolean(auth_token) || auth_token !== 12345) {
+    //     let message = !auth_token ? "Auth token was not submitted in the request." : "An invalid token was submitted for validation.";
+    //     return res.status(403).json({
+    //         status: 'Error',
+    //         message: `Authentication failed. ${message}`
+    //     });
+    // }
     next();
 }

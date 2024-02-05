@@ -1,9 +1,23 @@
 const resp = require('../utils/utils');
 
-exports.rootRequest = (req, res) => {
-    resp.sendResponse(res, 'Request to the root of the application engine!');
+class PagesController {
+
+    static rootRequest(req, res){
+
+    }
+
+    static aboutRequest(req, res){
+
+    }
+
+    static signupPage(req, res){
+
+    }
+
+    static loginPage(req, res){
+
+    }
+
 }
 
-exports.aboutRequest = (req, res) => {
-    resp.sendResponse(res, 'This is the about page request!');
-}
+module.exports = PagesController;

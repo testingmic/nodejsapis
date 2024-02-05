@@ -6,7 +6,7 @@ dotenv.config();
 class PostController {
 
     /** API endpoints */
-    static getAllPosts(req, res) {
+    static getPosts(req, res) {
         // offset and limit in the request
         let limit = req.query.limit || req.body.limit || process.env.LIMIT;
         let offset = req.query.offset || req.body.offset || process.env.OFFSET;
