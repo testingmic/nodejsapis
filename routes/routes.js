@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const pageController = require('../controllers/pages');
-const userController = require('../controllers/users');
-const postController = require('../controllers/posts');
+const { getUsers, createUser, singleUser, updateUser, authLogin, resetPassword } = require('../controllers/users');
+const { getPosts, singlePost, createPost, deletePost } = require('../controllers/posts');
 
 const router = Router();
 
@@ -12,16 +12,21 @@ router.get('/signup', pageController.signupPage);
 router.get('/login', pageController.loginPage);
 
 // post api requests
-router.get('/api/posts', postController.getPosts);
-router.get('/api/post/:post_id', postController.singlePost);
-router.post('/api/post/', postController.createPost);
-router.delete('/api/post/:post_id', postController.deletePost);
+router.get('/api/posts', getPosts);
+router.get('/api/post/:post_id', singlePost);
+router.post('/api/post/', createPost);
+router.delete('/api/post/:post_id', deletePost);
 
 // user api requests
-router.get('/api/users', userController.getUsers);
-router.get('/api/users/:user_id', userController.singleUser);
-router.post('/api/users', userController.createUser);
-router.put('/api/users/:user_id', userController.updateUser);
+router.get('/api/users', getUsers);
+router.get('/api/users/:user_id', singleUser);
+router.post('/api/users', createUser);
+router.put('/api/users/:user_id', updateUser);
+
+// authentication endpoints
+router.post('/api/login', authLogin);
+router.post('/api/register', createUser);
+router.post('/api/password/reset', resetPassword);
 
 // export the routers
 module.exports = router;
