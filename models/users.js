@@ -1,34 +1,45 @@
 const mongoose = require('mongoose');
+const { isEmail, isMobilePhone } = require('validator');
+
 const usersSchema = new mongoose.Schema({
     firstname: {
         type: String,
-        required: 'The firstname is required.',
-        minLength: 4,
-        maxLength: 64
+        required: [true, 'The firstname is required.'],
+        minLength: [3, 'The minimum length for firstname is 3'],
+        maxLength: [64, 'The maximum length for the firstname is 64']
     },
     lastname: {
         type: String,
-        required: 'The lastname is required.',
+        required: [true, 'The lastname is required.'],
         minLength: 4,
         maxLength: 32
     },
     email: {
         type: String,
-        required: 'The email is required.',
-        minLength: 4,
-        maxLength: 64
+        required: [true, 'The email is required.'],
+        minLength: [4, 'The minimum length of the email address is 4'],
+        maxLength: [64, 'The maximum length of the email address should be 64'],
+        validate: [isEmail, 'Please enter a valid email address.'],
+        unique: true,
+        lowercase: true
     },
     phonenumber: {
         type: String,
-        required: 'The phonenumber is required.',
+        required: [true, 'The phonenumber is required.'],
         minLength: 10,
-        maxLength: 13
+        maxLength: 13,
+        validate: [isMobilePhone, 'Please enter a valid phone number']
     },
     description: {
         type: String
     },
     gender: {
         type: String
+    },
+    password: {
+        type: String,
+        minLength: 8,
+        maxLength: 32
     },
     status: {
         type: String,

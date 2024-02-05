@@ -46,6 +46,8 @@ class UsersController {
         if(existingUser) {
             return resp.sendResponse(res, `There is an existing user with the email: ${req.body.email}`, 'error');
         }
+
+        req.body.updated_at = Date.now();
     
         const user = new User(req.body);
     
@@ -93,11 +95,11 @@ class UsersController {
     }
 
     static authLogin = (req, res) => {
-
+        return resp.sendResponse(res, req.body);
     }
 
     static resetPassword = (req, res) => {
-        
+        return resp.sendResponse(res, req.body);
     }
 
 }
