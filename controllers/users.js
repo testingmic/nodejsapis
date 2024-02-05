@@ -37,16 +37,6 @@ class UsersController {
     
     static createUser = async (req, res) => {
 
-        if(!req.body.email) {
-            return resp.sendResponse(res, `The email is required.`, 'error');
-        }
-    
-        const existingUser = await User.findOne({ email: req.body.email });
-    
-        if(existingUser) {
-            return resp.sendResponse(res, `There is an existing user with the email: ${req.body.email}`, 'error');
-        }
-
         req.body.updated_at = Date.now();
     
         const user = new User(req.body);
@@ -57,8 +47,9 @@ class UsersController {
                 message: result
             });
         }).catch((err) => {
-            return res.status(400).json(resp.errorHandler(err));
+            return res.status(400).json(resp.errorHandler(err, req));
         });
+
     }
 
     static updateUser = async(req, res) => {

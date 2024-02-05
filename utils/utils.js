@@ -6,23 +6,26 @@ exports.sendResponse = (res, message, status = 'success') => {
     });
 }
 
-exports.errorHandler = (error) => {
+exports.errorHandler = (error, req = {}) => {
 
-    const errorMessages = [];
+    const errorMessages = {};
     const errorObject = error.errors;
+
+    if(error.code === 11000) {
+        errorMessages['email'] = `There is an existing user with the email: ${req.body.email || ""}`;
+    }
 
     // Loop through the object keys
     for (const key in errorObject) {
         if (errorObject.hasOwnProperty(key)) {
             const error = errorObject[key];
             if (error.hasOwnProperty("message")) {
-                console.log(error);
-                errorMessages.push(error.message);
+                console.log(error.properties);
+                errorMessages[error.path] = error.message;
             }
         }
     }
 
-    // Loop through the main error object
     return {
         'status': 'error',
         'message': errorMessages
