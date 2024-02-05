@@ -1,3 +1,14 @@
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+dotenv.config();
+
+const maxAge = process.env.MAXTOKENDAYS * 24 * 60 * 60;
+exports.createAuthToken  = (_id) => {
+    return jwt.sign({ _id }, process.env.JWTSECRET, {
+        expiresIn: maxAge
+    });
+}
+
 exports.sendResponse = (res, message, status = 'success') => {
     let istatus = status == 'success' ? 200 : (status == 'not_found' ? 404 : 400);
     return res.status(istatus).send({

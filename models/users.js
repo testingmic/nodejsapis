@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const bcrypt =  require("bcrypt");
+
 const { isEmail, isMobilePhone } = require('validator');
 
 const usersSchema = new mongoose.Schema({
@@ -7,6 +9,9 @@ const usersSchema = new mongoose.Schema({
         required: [true, 'The firstname is required.'],
         minLength: [3, 'The minimum length for firstname is 3'],
         maxLength: [64, 'The maximum length for the firstname is 64']
+    },
+    account_id: {
+        type: Number
     },
     lastname: {
         type: String,
@@ -40,7 +45,8 @@ const usersSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        minLength: 8,
+        required: [true, 'The user\'s password is required.'],
+        minLength: 6,
         maxLength: 32
     },
     status: {
@@ -55,6 +61,12 @@ const usersSchema = new mongoose.Schema({
     updated_at: {
         type: Date
     }
+});
+
+usersSchema.pre("save", async function(next) {
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
 });
 
 module.exports = mongoose.model("Users", usersSchema);

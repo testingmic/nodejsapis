@@ -1,6 +1,8 @@
 const resp = require("../utils/utils");
 const User = require("../models/users");
+const { isEmail } = require("validator");
 const dotenv = require("dotenv");
+
 dotenv.config();
 class UsersController {
 
@@ -42,9 +44,17 @@ class UsersController {
         const user = new User(req.body);
     
         user.save().then((result) => {
+            const token = resp.createAuthToken(result._id);
             return res.status(201).json({
                 status: 'success',
-                message: result
+                message: {
+                    result: `${result.firstname} ${result.lastname} account was successfully created`,
+                    token: {
+                        '_id': result._id,
+                        'token': token,
+                        'created_at': result.created_at
+                    }
+                }
             });
         }).catch((err) => {
             return res.status(400).json(resp.errorHandler(err, req));
@@ -86,6 +96,11 @@ class UsersController {
     }
 
     static authLogin = (req, res) => {
+
+        if(!req.body.email  || (req.body.email && !isEmail(req.body.email))) {
+            resp.sendResponse(res, `A valid email is required to login.`);
+        }
+
         return resp.sendResponse(res, req.body);
     }
 
