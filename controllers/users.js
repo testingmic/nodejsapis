@@ -45,6 +45,10 @@ class UsersController {
     
         user.save().then((result) => {
             const token = resp.createAuthToken(result._id);
+
+            // create a cookie and set in the browser
+            res.cookie('jwtCookie', token, { httpOnly: true, maxAge: process.env.MAXTOKENDAYS * 24 * 60 * 60 * 1000 });
+
             return res.status(201).json({
                 status: 'success',
                 message: {
@@ -95,13 +99,32 @@ class UsersController {
 
     }
 
-    static authLogin = (req, res) => {
+    static authLogin = async (req, res) => {
 
         if(!req.body.email  || (req.body.email && !isEmail(req.body.email))) {
             resp.sendResponse(res, `A valid email is required to login.`);
         }
 
-        return resp.sendResponse(res, req.body);
+        try {
+
+            const login = await User.login(req.body.email, req.body.password);
+            const token = resp.createAuthToken(login._id);
+
+            // create a cookie and set in the browser
+            res.cookie('jwtCookie', token, { httpOnly: true, maxAge: process.env.MAXTOKENDAYS * 24 * 60 * 60 * 1000 });
+
+            return res.json({status: 'success', message: {
+                result: 'Account successfully logged in',
+                token: {
+                    user: login._id,
+                    auth_token: token,
+                    created_at: Date.now().toString()
+                }
+            }});
+
+        } catch(err) {
+            return resp.sendResponse(res, err.message, 'error');
+        }
     }
 
     static resetPassword = (req, res) => {

@@ -38,6 +38,11 @@ const usersSchema = new mongoose.Schema({
     description: {
         type: String
     },
+    is_admin: {
+        type: Number,
+        default: 0,
+        enum: [0, 1]
+    },
     gender: {
         type: String,
         enum: ['male', 'female', 'other'],
@@ -68,5 +73,16 @@ usersSchema.pre("save", async function(next) {
     this.password = await bcrypt.hash(this.password, salt);
     next();
 });
+
+usersSchema.statics.login = async function(email, password) {
+    const user = await this.findOne({email: email});
+    if(user) {
+        let verifyPassword = await bcrypt.compare(password, user.password);
+        if(verifyPassword) {
+            return user;
+        }
+     }
+     throw Error(`We could not validate the credentials you entered.`);
+}
 
 module.exports = mongoose.model("Users", usersSchema);

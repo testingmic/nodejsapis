@@ -1,6 +1,9 @@
 // initialize the main package
 const express = require("express");
 
+// call the cookie parser
+const cookieParser = require("cookie-parser");
+
 // invove rate limiting
 const rateLimit = require("express-rate-limit");
 
@@ -44,6 +47,9 @@ app.use(compress());
 
 // convert all request body to json
 app.use(express.json());
+
+// make use of the cookie parser
+app.use(cookieParser());
 
 // rate limit the requests
 app.use(limiter);
