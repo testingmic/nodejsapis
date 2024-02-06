@@ -9,6 +9,8 @@ const rateLimit = require("express-rate-limit");
 
 // add helmet and compress response
 const helmet = require("helmet");
+
+// set the compression
 const compress = require("compression");
 
 // invoke other important packages
