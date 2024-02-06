@@ -1,5 +1,6 @@
 const resp = require("../utils/utils");
 const User = require("../models/users");
+const Accounts = require("../models/accounts");
 const { isEmail } = require("validator");
 const dotenv = require("dotenv");
 
@@ -47,9 +48,13 @@ class UsersController {
         const user = new User(req.body);
     
         user.save().then((result) => {
-            const token = resp.createAuthToken(result._id);
 
+            Accounts({user_id: result._id}).save().then((acc) => {
+                User.findOneAndUpdate({_id: result._id}, {account_id: acc._id});
+            });
+            
             // create a cookie and set in the browser
+            const token = resp.createAuthToken(result._id);
             res.cookie('jwtCookie', token, { httpOnly: true, maxAge: process.env.MAXTOKENDAYS * 24 * 60 * 60 * 1000 });
 
             return res.status(201).json({

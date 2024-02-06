@@ -21,6 +21,9 @@ const websiteSchema = mongoose.Schema({
         default: 'active',
         enum: ['active', 'inactive', 'suspended']
     },
+    account_id: {
+        type: Number
+    },
     created_by: {
         type: String,
         required: [true, 'The user_id must be set for the created_by property.'],

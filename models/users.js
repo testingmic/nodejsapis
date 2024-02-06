@@ -11,7 +11,7 @@ const usersSchema = new mongoose.Schema({
         maxLength: [64, 'The maximum length for the firstname is 64']
     },
     account_id: {
-        type: Number
+        type: String
     },
     lastname: {
         type: String,
