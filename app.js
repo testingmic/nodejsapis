@@ -34,7 +34,6 @@ mongoose.connect(process.env.MONGO_URI).then((data) => {
 
 // load the routes
 const routes = require('./routes/routes');
-const { authenticationValidator } = require('./utils/utils');
 
 // middleware
 app.use(morgan('dev'));
@@ -55,7 +54,7 @@ app.use(cookieParser());
 app.use(limiter);
 
 // handle the request with authentication
-app.use("/", authenticationValidator, routes);
+app.use("/", routes);
 
 const port = process.env.PORT;
 app.listen(port, () => {

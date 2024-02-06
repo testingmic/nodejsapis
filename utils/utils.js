@@ -45,14 +45,22 @@ exports.errorHandler = (error, req = {}) => {
 }
 
 exports.authenticationValidator = (req, res, next) => {
-    // authentication verification
-    // let auth_token = parseInt(req.query.token) || parseInt(req.body.token);
-    // if(!Boolean(auth_token) || auth_token !== 12345) {
-    //     let message = !auth_token ? "Auth token was not submitted in the request." : "An invalid token was submitted for validation.";
-    //     return res.status(403).json({
-    //         status: 'Error',
-    //         message: `Authentication failed. ${message}`
-    //     });
-    // }
-    next();
+    const token = req.cookies.jwtCookie;
+    if(!token) {
+        return res.status(403).send({
+            'status': 'error',
+            'message': 'Sorry you do not have the required permissions to perform this request.'
+        });
+    }
+    jwt.verify(token, process.env.JWTSECRET, (err, decodedToken) => {
+        if(err) {
+            return res.status(403).json({
+                'status': 'error',
+                'message': 'Invalid Token: An invalid cookie token was parsed in the request.'
+            });
+        }
+        req.decodedToken = decodedToken;
+        
+        next();
+    });
 }
