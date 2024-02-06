@@ -15,7 +15,7 @@ class UsersController {
         let limit = req.query.limit || req.body.limit || process.env.LIMIT;
         let offset = req.query.offset || req.body.offset || process.env.OFFSET;
     
-        const users = User.find().select(`_id firstname lastname email phonenumber status created_at updated_at`).skip(offset).limit(limit).then((result) => {
+        const users = User.find().select(process.env.USER_COLUMNS).skip(offset).limit(limit).then((result) => {
             return res.status(200).json({
                 status: 'success',
                 message: result
@@ -31,7 +31,7 @@ class UsersController {
             return resp.sendResponse(res, `The user_id param is required.`, 'error');
         }
 
-        const user = User.findById({_id: req.params.user_id }).select(`_id firstname lastname email phonenumber status created_at updated_at`).then((result) => {
+        const user = User.findById({_id: req.params.user_id }).select(process.env.USER_COLUMNS).then((result) => {
             return res.status(200).json({
                 status: 'success',
                 message: result

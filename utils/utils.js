@@ -59,7 +59,7 @@ exports.authenticationValidator = (req, res, next) => {
         if(err) {
             return res.status(403).json({ 'status': 'error', 'message': invalidToken });
         }
-        const user = await User.findById({_id: decodedToken._id}).then((result) => {
+        const user = await User.findById({_id: decodedToken._id}).select(process.env.USER_COLUMNS).then((result) => {
             req.body.userData = result;
             next();
         }).catch((err) => {
