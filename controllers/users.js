@@ -1,7 +1,10 @@
 const resp = require("../utils/utils");
 const User = require("../models/users");
 const Accounts = require("../models/accounts");
+const Resets = require("../models/resets");
+
 const mongoose = require("mongoose");
+
 const { isEmail } = require("validator");
 const dotenv = require("dotenv");
 
@@ -17,11 +20,21 @@ class UsersController {
         let offset = req.query.offset || req.body.offset || process.env.OFFSET;
 
         let filter = {};
-        ['account_id', 'email', 'phonenumber', 'status'].forEach((value) => {
+        ['account_id', 'email', 'phonenumber', 'status', 'is_admin'].forEach((value) => {
             if(req.body[value]) {
                 filter[value] = req.body[value];
             }
         });
+
+        if(req.body.is_admin && parseInt(req.body.is_admin) === 1) {
+            if(parseInt(req.body.userData.is_admin) !== 1) {
+                filter['is_admin'] = 0;
+            }
+        }
+
+        if(req.body.firstname || req.body.lastname) {
+            filter = { firstname: { $regex: (req.body.firstname || req.body.lastname), $options: 'i' } };
+        }
   
         const users = User.find(filter).select(process.env.USER_COLUMNS).skip(offset).limit(limit).then((result) => {
             return res.status(200).json({
@@ -52,6 +65,13 @@ class UsersController {
     static createUser = async (req, res) => {
 
         try {
+
+            if(req.body.is_admin && (req.body.userData !== 1)) {
+                if(parseInt(req.body.is_admin) === 1) {
+                    return res.status(400).json(resp.sendResponse(res, 'You do not have the required permission to create an admin user', 'error'));
+                }
+            }
+
             req.body.updated_at = Date.now();
             req.body.account_id = req.body.account_id || 0;
     
@@ -69,7 +89,7 @@ class UsersController {
             }
     
             const token = resp.createAuthToken(result._id);
-            res.cookie('jwtCookie', token, { httpOnly: true, maxAge: process.env.MAXTOKENDAYS * 24 * 60 * 60 * 1000 });
+            // res.cookie('jwtCookie', token, { httpOnly: true, maxAge: process.env.MAXTOKENDAYS * 24 * 60 * 60 * 1000 });
     
             return res.status(201).json({
                 status: 'success',
@@ -153,6 +173,48 @@ class UsersController {
 
     static resetPassword = (req, res) => {
         return resp.sendResponse(res, req.body);
+    }
+
+    static forgottenPassword = async (req, res) => {
+
+        if(!req.body.email) {
+            return resp.sendResponse(res, 'The email address is required', 'error');
+        }
+
+        try {
+
+            const user = await User.findOne({email: req.body.email}).select(process.env.USER_COLUMNS);
+            if(!user) {
+                return resp.sendResponse(res, 'No user was found with the specified email address.', 'error');
+            }
+
+            await Resets.deleteMany({email: req.body.email});
+
+            const objectId = new mongoose.Types.ObjectId(user._id).toHexString();
+            const token = resp.generateRandomString(32);
+            const resetObj = new Resets({email: user.email, user_id: objectId, token: token});
+            await resetObj.save();
+
+            const message = `Hello ${user.firstname} ${user.lastname} you requested for a password reset.  Use this token to reset your password: ${token}`;
+
+            resp.sendEmail( {
+                from: process.env.EMAIL, 
+                to: user.email,
+                subject: 'Password Reset Request',
+                text: message,
+                html: `<p>${message}</p>`
+            });
+            
+            return res.status(200).json({
+                status: 'success',
+                message: 'Check the provided email address for the verification token'
+            });
+
+        } catch(err) {
+            console.log('error: ', err);
+            return res.status(400).json(resp.errorHandler(err));
+        }
+
     }
 
 }
