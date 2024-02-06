@@ -13,6 +13,11 @@ const resetSchema = mongoose.Schema({
         type: String,
         required: true,
         unique: true
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'cancelled', 'active', 'completed'],
+        default: 'pending'
     }
 }, {timestamps: true});
 

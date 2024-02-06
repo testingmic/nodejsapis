@@ -2,6 +2,7 @@ const resp = require("../utils/utils");
 const User = require("../models/users");
 const Accounts = require("../models/accounts");
 const Resets = require("../models/resets");
+const bcrypt = require("bcrypt");
 
 const mongoose = require("mongoose");
 
@@ -12,8 +13,6 @@ dotenv.config();
 class UsersController {
 
     static getUsers = (req, res) => {
-
-        console.log('userData: ', req.body.userData);
         
         // offset and limit in the request
         let limit = req.query.limit || req.body.limit || process.env.LIMIT;
@@ -171,8 +170,49 @@ class UsersController {
         }
     }
 
-    static resetPassword = (req, res) => {
-        return resp.sendResponse(res, req.body);
+    static resetPassword = async (req, res) => {
+
+        if(!req.body.token || req.body.token && req.body.token.length < 16) {
+            return resp.sendResponse(res, 'The token is required and must be at least 16 characters long.', 'error');
+        }
+        else if(!req.body.password) {
+            return resp.sendResponse(res, 'The password variable is required.', 'error');
+        }
+        else if(req.body.password.length < 6) {
+            return resp.sendResponse(res, 'The password must be at least 6 characters long.', 'error');
+        }
+        else if(req.body.password > 32) {
+            return resp.sendResponse(res, 'The maximum length of the password must be 32 characters long.', 'error');
+        }
+        else if(!req.body.confirm_password) {
+            return resp.sendResponse(res, 'The confirm_password variable is required.', 'error');
+        }
+        else if(req.body.password !== req.body.confirm_password) {
+            return resp.sendResponse(res, 'The password and confirm_password values do not match.', 'error');
+        }
+
+        try {
+
+            const token = await Resets.findOne({token: req.body.token, status: 'pending'});
+            if(!token) {
+                return  resp.sendResponse(res, 'You have submitted an invalid token.', 'error');
+            }
+
+            const salt = await bcrypt.genSalt();
+            const password = await bcrypt.hash(req.body.password, salt);
+
+            await User.updateOne({email: token.email}, {password: password});
+            await Resets.updateOne({ token: req.body.token }, { status: 'completed'});
+            
+            return res.status(200).json({
+                'status': 'success',
+                'message': 'The password request was successfully processed.'
+            });
+            
+        } catch(err) {
+            return res.status(400).json(resp.errorHandler(err));
+        }
+
     }
 
     static forgottenPassword = async (req, res) => {
@@ -188,11 +228,11 @@ class UsersController {
                 return resp.sendResponse(res, 'No user was found with the specified email address.', 'error');
             }
 
-            await Resets.deleteMany({email: req.body.email});
+            await Resets.updateMany({email: req.body.email, status: 'pending'}, {status: 'cancelled'});
 
             const objectId = new mongoose.Types.ObjectId(user._id).toHexString();
             const token = resp.generateRandomString(32);
-            const resetObj = new Resets({email: user.email, user_id: objectId, token: token});
+            const resetObj = new Resets({email: user.email, user_id: objectId, token: token, status: 'pending'});
             await resetObj.save();
 
             const message = `Hello ${user.firstname} ${user.lastname} you requested for a password reset.  Use this token to reset your password: ${token}`;
@@ -211,7 +251,6 @@ class UsersController {
             });
 
         } catch(err) {
-            console.log('error: ', err);
             return res.status(400).json(resp.errorHandler(err));
         }
 

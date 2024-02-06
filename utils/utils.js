@@ -30,9 +30,7 @@ exports.sendEmail = async (mailOptions) => {
     });
 
     await transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log('Error occurred:', error);
-        } else {
+        if (!error) {
             console.log('Email sent:', info.response);
         }
     });
@@ -60,7 +58,6 @@ exports.errorHandler = (error, req = {}) => {
         if (errorObject.hasOwnProperty(key)) {
             const error = errorObject[key];
             if (error.hasOwnProperty("message")) {
-                console.log(error.properties);
                 errorMessages[error.path] = error.message;
             }
         }
