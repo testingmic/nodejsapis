@@ -7,6 +7,9 @@ dotenv.config();
 class UsersController {
 
     static getUsers = (req, res) => {
+
+        console.log('userData: ', req.body.userData);
+        
         // offset and limit in the request
         let limit = req.query.limit || req.body.limit || process.env.LIMIT;
         let offset = req.query.offset || req.body.offset || process.env.OFFSET;

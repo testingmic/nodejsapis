@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const User = require("../models/users");
 dotenv.config();
 
 const maxAge = process.env.MAXTOKENDAYS * 24 * 60 * 60;
@@ -52,15 +53,17 @@ exports.authenticationValidator = (req, res, next) => {
             'message': 'Sorry you do not have the required permissions to perform this request.'
         });
     }
-    jwt.verify(token, process.env.JWTSECRET, (err, decodedToken) => {
+
+    const invalidToken = 'Invalid Token: An invalid cookie token was parsed in the request.';
+    jwt.verify(token, process.env.JWTSECRET, async (err, decodedToken) => {
         if(err) {
-            return res.status(403).json({
-                'status': 'error',
-                'message': 'Invalid Token: An invalid cookie token was parsed in the request.'
-            });
+            return res.status(403).json({ 'status': 'error', 'message': invalidToken });
         }
-        req.decodedToken = decodedToken;
-        
-        next();
+        const user = await User.findById({_id: decodedToken._id}).then((result) => {
+            req.body.userData = result;
+            next();
+        }).catch((err) => {
+            return res.status(403).json({ 'status': 'error', 'message': 'the user does not exist.' });
+        });
     });
 }
