@@ -1,6 +1,7 @@
 const resp = require("../utils/utils");
 const User = require("../models/users");
 const Accounts = require("../models/accounts");
+const mongoose = require("mongoose");
 const { isEmail } = require("validator");
 const dotenv = require("dotenv");
 
@@ -14,8 +15,15 @@ class UsersController {
         // offset and limit in the request
         let limit = req.query.limit || req.body.limit || process.env.LIMIT;
         let offset = req.query.offset || req.body.offset || process.env.OFFSET;
-    
-        const users = User.find().select(process.env.USER_COLUMNS).skip(offset).limit(limit).then((result) => {
+
+        let filter = {};
+        ['account_id', 'email', 'phonenumber', 'status'].forEach((value) => {
+            if(req.body[value]) {
+                filter[value] = req.body[value];
+            }
+        });
+  
+        const users = User.find(filter).select(process.env.USER_COLUMNS).skip(offset).limit(limit).then((result) => {
             return res.status(200).json({
                 status: 'success',
                 message: result
@@ -40,39 +48,47 @@ class UsersController {
             return resp.sendResponse(res, `The user could not be found.`, 'not_found');
         });
     }
-    
+
     static createUser = async (req, res) => {
 
-        req.body.updated_at = Date.now();
+        try {
+            req.body.updated_at = Date.now();
+            req.body.account_id = req.body.account_id || 0;
     
-        const user = new User(req.body);
+            let user_account_id = req.body.account_id;
     
-        user.save().then((result) => {
-
-            Accounts({user_id: result._id}).save().then((acc) => {
-                User.findOneAndUpdate({_id: result._id}, {account_id: acc._id});
-            });
-            
-            // create a cookie and set in the browser
+            const user = new User(req.body);
+            const result = await user.save();
+    
+            if (!req.body.account_id) {
+                const accountObj = new Accounts({ user_id: result._id });
+                const acc = await accountObj.save();
+                const objectId = new mongoose.Types.ObjectId(acc._id);
+                user_account_id = objectId.toHexString();
+                await User.updateOne({ _id: result._id }, { account_id: user_account_id });
+            }
+    
             const token = resp.createAuthToken(result._id);
             res.cookie('jwtCookie', token, { httpOnly: true, maxAge: process.env.MAXTOKENDAYS * 24 * 60 * 60 * 1000 });
-
+    
             return res.status(201).json({
                 status: 'success',
                 message: {
                     result: `${result.firstname} ${result.lastname} account was successfully created`,
                     token: {
                         '_id': result._id,
+                        'account_id': user_account_id,
                         'token': token,
                         'created_at': result.created_at
                     }
                 }
             });
-        }).catch((err) => {
-            return res.status(400).json(resp.errorHandler(err, req));
-        });
 
-    }
+        } catch (err) {
+            return res.status(400).json(resp.errorHandler(err, req));
+        }
+
+    };
 
     static updateUser = async(req, res) => {
 
